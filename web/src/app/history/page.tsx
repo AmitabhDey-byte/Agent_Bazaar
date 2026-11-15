@@ -1,0 +1,10 @@
+"use client";
+import {useState} from "react";
+import Link from "next/link";
+import {useQuery} from "@tanstack/react-query";
+import {ArrowUpRight,History,Search} from "lucide-react";
+import {api} from "@/lib/api";
+import {useSession} from "@/lib/store";
+import type {Run} from "@/lib/types";
+import {Skeleton} from "@/components/ui/skeleton";
+export default function HistoryPage(){const{token}=useSession();const[q,setQ]=useState("");const runs=useQuery({queryKey:["runs",token,q],queryFn:()=>api<Run[]>(`/runs?q=${encodeURIComponent(q)}`,{},token),enabled:!!token});return <><div className="eyebrow">YOUR WORK, REMEMBERED</div><h1>Every mission leaves a trail.</h1><p className="subtitle mb-8">Revisit the thinking, the work, and every on-chain receipt.</p><div className="page-card"><div className="flex gap-3 items-center mb-6"><Search size={17} className="muted"/><input className="search-input" aria-label="Search run history" placeholder="Search your missions…" value={q} onChange={e=>setQ(e.target.value)}/></div>{runs.isLoading?<Skeleton className="h-48 w-full"/>:runs.data?.length?<div className="table-wrap"><table className="table"><thead><tr><th>Mission</th><th>Status</th><th>Created</th><th/></tr></thead><tbody>{runs.data.map(run=><tr key={run.id}><td><Link href={`/runs/${run.id}`}>{run.goal}</Link></td><td><span className="outline-pill">{run.status}</span></td><td className="muted whitespace-nowrap">{new Date(run.created_at).toLocaleDateString()}</td><td><Link href={`/runs/${run.id}`} aria-label={`Open ${run.goal}`}><ArrowUpRight size={16}/></Link></td></tr>)}</tbody></table></div>:<div className="empty-panel"><History size={30}/><h2>{runs.isError?"History is unavailable":token?"Your first mission is ahead":"Your workspace is private"}</h2><p>{runs.isError?"The API could not load your runs. Check your session and network connection.":token?"Launch a goal and its complete execution trail will be saved here.":"Connect your wallet and authorize a session to see your saved runs."}</p><Link href="/" className="lime text-xs mt-2">Go to mission control ↗</Link></div>}</div></>}

@@ -4,6 +4,7 @@ node_modules/
 .env.*
 !.env.example
 .next/
+.next-dev/
 out/
 cache/
 broadcast/
@@ -17,3 +18,4 @@ playwright-report/
 .vercel/
 .tools/
 .local/
+.playwright-mcp/

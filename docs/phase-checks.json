@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-11-15T07:01:13.282410+00:00",
+  "checks": [
+    {
+      "check": "forge test",
+      "status": "blocked",
+      "reason": "Implementation missing: contracts\\foundry.toml"
+    },
+    {
+      "check": "pytest",
+      "status": "blocked",
+      "reason": "Implementation missing: api\\tests"
+    },
+    {
+      "check": "next build",
+      "status": "blocked",
+      "reason": "Implementation missing: web\\package.json"
+    },
+    {
+      "check": "playwright smoke",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "Error: No tests found\n\n"
+    }
+  ]
+}

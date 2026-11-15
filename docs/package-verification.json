@@ -1,0 +1,304 @@
+{
+  "checked_at": "2026-11-15T06:59:17.389367+00:00",
+  "scope": "Package identity only; not API or compatibility validation",
+  "packages": [
+    {
+      "package": "next",
+      "source": "https://raw.githubusercontent.com/vercel/next.js/canary/packages/next/README.md",
+      "status": "verified",
+      "evidence": [
+        "<a href=\"https://nextjs.org\">",
+        "<source media=\"(prefers-color-scheme: dark)\" srcset=\"https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_dark_background.png\">"
+      ],
+      "sha256": "0ce9d8564a8d151caccc4ee6d3df746010d06a1e38c27a5fe340441a025aa751"
+    },
+    {
+      "package": "react",
+      "source": "https://raw.githubusercontent.com/facebook/react/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "# [React](https://react.dev/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/react/react/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.",
+        "React is a JavaScript library for building user interfaces."
+      ],
+      "sha256": "9b6ac13cb03c06ae5643376cebd8d0e6cbae7ec0dd30a5cdc443a93160c348eb"
+    },
+    {
+      "package": "react-dom",
+      "source": "https://raw.githubusercontent.com/facebook/react/main/packages/react-dom/README.md",
+      "status": "verified",
+      "evidence": [
+        "# `react-dom`",
+        "npm install react react-dom"
+      ],
+      "sha256": "80589e00067a57cb9b4fbc618afe7aff06ff1fec7b2840dda1c1165d8bd35080"
+    },
+    {
+      "package": "typescript",
+      "source": "https://raw.githubusercontent.com/microsoft/TypeScript/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "# TypeScript",
+        "[![CI](https://github.com/microsoft/TypeScript/actions/workflows/ci.yml/badge.svg)](https://github.com/microsoft/TypeScript/actions/workflows/ci.yml)"
+      ],
+      "sha256": "2b0c6b9a289d72ce11bce498cc7b21c9dad32e8f7d3a28211225d433f2686d89"
+    },
+    {
+      "package": "tailwindcss",
+      "source": "https://raw.githubusercontent.com/tailwindlabs/tailwindcss/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "<a href=\"https://tailwindcss.com\" target=\"_blank\">",
+        "<source media=\"(prefers-color-scheme: dark)\" srcset=\"https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg\">"
+      ],
+      "sha256": "a7db79d5cd483c6f6d1a51f4042e32598ec39e2391a5dd5be62a71d59299cda8"
+    },
+    {
+      "package": "shadcn",
+      "source": "https://raw.githubusercontent.com/shadcn-ui/ui/main/packages/shadcn/README.md",
+      "status": "verified",
+      "evidence": [
+        "# shadcn",
+        "npx shadcn create"
+      ],
+      "sha256": "13d1235d1690dad504c4dd423d4f237a9a74eb8f2e49e7ee39f9c995ba7c0856"
+    },
+    {
+      "package": "motion",
+      "source": "https://raw.githubusercontent.com/motiondivision/motion/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "<h1 align=\"center\"> <img width=\"35\" height=\"35\" alt=\"Motion logo\" src=\"https://github.com/user-attachments/assets/00d6d1c3-72c4-4c2f-a664-69da13182ffc\" /><br />Motion</h1>",
+        "<a href=\"https://www.npmjs.com/package/motion\" rel=\"noopener noreferrer nofollow\" ><img src=\"https://img.shields.io/npm/v/motion?color=0368FF&label=version\" alt=\"npm version\"></a>"
+      ],
+      "sha256": "08915bb5254a4bc1fd47e8d7ea8fff0dcb470461f6fd6b59fb6d2f0bef0400df"
+    },
+    {
+      "package": "@xyflow/react",
+      "source": "https://raw.githubusercontent.com/xyflow/xyflow/main/packages/react/README.md",
+      "status": "verified",
+      "evidence": [
+        "npm install @xyflow/react",
+        "} from '@xyflow/react';"
+      ],
+      "sha256": "d61d3061725de60ee80ec9864ba1356a71a5a10bb40aeedacd8e7e7d8c3e078c"
+    },
+    {
+      "package": "wagmi",
+      "source": "https://raw.githubusercontent.com/wevm/wagmi/main/packages/react/README.md",
+      "status": "verified",
+      "evidence": [
+        "# wagmi",
+        "pnpm add wagmi viem @tanstack/react-query"
+      ],
+      "sha256": "20cf4bfb631577c913d6b6c3e8a858446cee009fcbb1017cf96e4997a6691ad8"
+    },
+    {
+      "package": "viem",
+      "source": "https://raw.githubusercontent.com/wevm/viem/main/src/README.md",
+      "status": "verified",
+      "evidence": [
+        "<!-- > Viem is participating in Gitcoin Grants round 21. Consider <a href=\"https://explorer.gitcoin.co/#/round/42161/389/73\">supporting the project</a>. Thank you. \ud83d\ude4f -->",
+        "<a href=\"https://viem.sh\">"
+      ],
+      "sha256": "c2be1567cf7b56782c29ff6f6bc4be0d5b65c84ed05fc20f35e091830c445f1e"
+    },
+    {
+      "package": "@tanstack/react-query",
+      "source": "https://raw.githubusercontent.com/TanStack/query/main/packages/react-query/README.md",
+      "status": "verified",
+      "evidence": [
+        "<img alt=\"\" src=\"https://deno.bundlejs.com/?q=@tanstack/react-query&config={%22esbuild%22:{%22external%22:[%22react%22,%22react-dom%22]}}&badge=detailed\" />"
+      ],
+      "sha256": "0f689c3e8fcec5578fcd13b5a40980b2b3d5f5422452e75542f722d6db20b1c6"
+    },
+    {
+      "package": "zustand",
+      "source": "https://raw.githubusercontent.com/pmndrs/zustand/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "[![Build Status](https://img.shields.io/github/actions/workflow/status/pmndrs/zustand/test.yml?branch=main&style=flat&colorA=000000&colorB=000000)](https://github.com/pmndrs/zustand/actions?query=workflow%3ATest)",
+        "[![Build Size](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdeno.bundlejs.com%2F%3Fq%3Dzustand&query=%24.size.uncompressedSize&style=flat&label=bundle%20size&colorA=000000&colorB=000000)](https://bundlejs.com/?q=zustand)"
+      ],
+      "sha256": "3a53f23dae9f33f7b951cfc6eac1dbdb7def9c722d8f32a70d85190f47d11d5b"
+    },
+    {
+      "package": "fastapi",
+      "source": "https://raw.githubusercontent.com/fastapi/fastapi/master/README.md",
+      "status": "verified",
+      "evidence": [
+        "<a href=\"https://fastapi.tiangolo.com\"><img src=\"https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png\" alt=\"FastAPI\"></a>",
+        "<em>FastAPI framework, high performance, easy to learn, fast to code, ready for production</em>"
+      ],
+      "sha256": "08b41549d83af51e20bc8a358f0c77fe0d82e0bd61e567c550d375ae1ddd6033"
+    },
+    {
+      "package": "anthropic",
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-python/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "# Anthropic SDK for Python",
+        "[![PyPI version](https://img.shields.io/pypi/v/anthropic.svg)](https://pypi.org/project/anthropic/)"
+      ],
+      "sha256": "6ff49f4723c1eb500bab6941e2e2d109993580c3ebe318752bd4c88b41f22a1f"
+    },
+    {
+      "package": "x402",
+      "source": "https://raw.githubusercontent.com/coinbase/x402/main/python/x402/README.md",
+      "status": "verified",
+      "evidence": [
+        "# x402 Python SDK",
+        "Core implementation of the x402 payment protocol. Provides transport-agnostic client, server, and facilitator components with both async and sync variants."
+      ],
+      "sha256": "76698ad9f33c74a7f9a9e052cb2b68fe692f392d7bad8336eece96d32d3fb00a"
+    },
+    {
+      "package": "web3",
+      "source": "https://raw.githubusercontent.com/ethereum/web3.py/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "# web3.py",
+        "[![Build Status](https://github.com/ApeWorX/web3.py/actions/workflows/test.yaml/badge.svg)](https://github.com/ApeWorX/web3.py/actions/workflows/test.yaml)"
+      ],
+      "sha256": "14a75df975b1b6413fdce255c544a8ca6ecfe8cdfb581cf9db5d9b5ab82372bd"
+    },
+    {
+      "package": "pydantic",
+      "source": "https://raw.githubusercontent.com/pydantic/pydantic/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "# Pydantic Validation",
+        "[![CI](https://img.shields.io/github/actions/workflow/status/pydantic/pydantic/ci.yml?branch=main&logo=github&label=CI)](https://github.com/pydantic/pydantic/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)"
+      ],
+      "sha256": "ce51f0aeaec3e44c54fd3311c305aae33b1569f95a9f9a5b1cc0aa8b3a51daf6"
+    },
+    {
+      "package": "tenacity",
+      "source": "https://raw.githubusercontent.com/jd/tenacity/main/doc/source/index.rst",
+      "status": "verified",
+      "evidence": [
+        "Tenacity",
+        ".. image:: https://img.shields.io/pypi/v/tenacity.svg"
+      ],
+      "sha256": "3ac09ac0699d02e9826f5d1efa6ef1d8d9e6017e4faa41d8bea1c081f0bfecf2"
+    },
+    {
+      "package": "psycopg",
+      "source": "https://raw.githubusercontent.com/psycopg/psycopg/master/README.rst",
+      "status": "verified",
+      "evidence": [
+        "Psycopg 3 -- PostgreSQL database adapter for Python",
+        "Psycopg 3 is a modern implementation of a PostgreSQL adapter for Python."
+      ],
+      "sha256": "b1e683fed1abbcba4c30dcc96b6d9e6e22de69a555821edc5e433b9999112c40"
+    },
+    {
+      "package": "upstash-redis",
+      "source": "https://raw.githubusercontent.com/upstash/redis-py/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "upstash-redis is a connectionless, HTTP-based Redis client for Python, designed to be used in serverless and serverful environments such as:",
+        "Inspired by other Redis clients like [@upstash/redis](https://github.com/upstash/upstash-redis) and [redis-py](https://github.com/redis/redis-py),"
+      ],
+      "sha256": "cc4404a6c0b63cd6463cb1912b71a19fb5ffdeb9aa7e70252770cb40ddabbdf6"
+    },
+    {
+      "package": "pytest",
+      "source": "https://raw.githubusercontent.com/pytest-dev/pytest/main/README.rst",
+      "status": "verified",
+      "evidence": [
+        ".. image:: https://github.com/pytest-dev/pytest/raw/main/doc/en/img/pytest_logo_curves.svg",
+        ":target: https://docs.pytest.org/en/stable/"
+      ],
+      "sha256": "37c713f12b48774c77c40accfe3a6a28c25d7e763c9c5e34266261cf738713b5"
+    },
+    {
+      "package": "slither-analyzer",
+      "source": "https://raw.githubusercontent.com/crytic/slither/master/README.md",
+      "status": "verified",
+      "evidence": [
+        "![PyPI](https://img.shields.io/pypi/v/slither-analyzer?logo=python&logoColor=white&label=slither-analyzer)",
+        "uv tool install slither-analyzer"
+      ],
+      "sha256": "f2065d562ac5f121a0509f35b0fa9d26d91fd0aa22bc2650a490557e4fd5ea87"
+    },
+    {
+      "package": "@openzeppelin/contracts",
+      "source": "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/README.md",
+      "status": "verified",
+      "evidence": [
+        "[![NPM Package](https://img.shields.io/npm/v/@openzeppelin/contracts.svg)](https://www.npmjs.org/package/@openzeppelin/contracts)",
+        "| **latest** | \u2705 Audited releases      | Stable, audited versions of the package. This is the **default** version installed when users run `npm install @openzeppelin/contracts`.                                      |"
+      ],
+      "sha256": "4c7bb702a0a318fd6bb92438017c0c166242b3a20d3c4502ced71983e1d0b282"
+    },
+    {
+      "package": "forge",
+      "source": "https://raw.githubusercontent.com/foundry-rs/foundry/master/README.md",
+      "status": "verified",
+      "evidence": [
+        "- [**Forge**](https://getfoundry.sh/forge) \u2014 Build, test, fuzz, debug and deploy Solidity contracts.",
+        "forge init counter && cd counter"
+      ],
+      "sha256": "36ea15742e689cb16676fd9b10646947ecf9e358f7c6453148d888d3d9298c2d"
+    },
+    {
+      "package": "@playwright/test",
+      "source": "https://raw.githubusercontent.com/microsoft/playwright/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "npm i -D @playwright/test",
+        "import { test, expect } from '@playwright/test';"
+      ],
+      "sha256": "6826f70cde30d7bc2211a9aa1fc6c11832f1b4ea43707749c9aa508d651c2ce4"
+    },
+    {
+      "package": "@playwright/mcp",
+      "source": "https://raw.githubusercontent.com/microsoft/playwright-mcp/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "\"@playwright/mcp@latest\"",
+        "\"@playwright/mcp@latest\""
+      ],
+      "sha256": "db4a7eee3e3bd4be105f8f9a10945cda390fe3bd955d05183e961f4e91f0b7ef"
+    },
+    {
+      "package": "@upstash/context7-mcp",
+      "source": "https://raw.githubusercontent.com/upstash/context7/master/packages/mcp/README.md",
+      "status": "verified",
+      "evidence": [
+        "[![Website](https://img.shields.io/badge/Website-context7.com-blue)](https://context7.com) [![NPM Version](https://img.shields.io/npm/v/%40upstash%2Fcontext7-mcp?color=red)](https://www.npmjs.com/package/@upstash/context7-mcp) [![MIT licens",
+        "To install Context7 MCP Server for any client automatically via [Smithery](https://smithery.ai/server/@upstash/context7-mcp):"
+      ],
+      "sha256": "90275d046dac120e0b4c1405a14ae7d6798e6994e00d4ae88507e39ca97693ae"
+    },
+    {
+      "package": "@modelcontextprotocol/sdk",
+      "source": "https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/v1.x/README.md",
+      "status": "verified",
+      "evidence": [
+        "# MCP TypeScript SDK [![NPM Version](https://img.shields.io/npm/v/%40modelcontextprotocol%2Fsdk)](https://www.npmjs.com/package/@modelcontextprotocol/sdk) [![MIT licensed](https://img.shields.io/npm/l/%40modelcontextprotocol%2Fsdk)](https:/",
+        "npm install @modelcontextprotocol/sdk zod"
+      ],
+      "sha256": "835cfac37c651e618d14b24d7d963bd2e9d0700ddd14b669eca85803d6f34437"
+    },
+    {
+      "package": "zod",
+      "source": "https://raw.githubusercontent.com/colinhacks/zod/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "packages/zod/README.md"
+      ],
+      "sha256": "439c0c93c68f5dffea46de6df34f3b545d001d19570b5ee4975755d40bcf2c78"
+    },
+    {
+      "package": "github-mcp-server",
+      "source": "https://raw.githubusercontent.com/github/github-mcp-server/main/README.md",
+      "status": "verified",
+      "evidence": [
+        "[![Go Report Card](https://goreportcard.com/badge/github.com/github/github-mcp-server/v2)](https://goreportcard.com/report/github.com/github/github-mcp-server/v2)",
+        "The Go module path is `github.com/github/github-mcp-server/v2`. Library consumers"
+      ],
+      "sha256": "7f43f99cdb5fffba470107d58baa9df6faf6618b43abd75df99c322dcec9ee1c"
+    }
+  ]
+}

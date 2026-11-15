@@ -1,0 +1,49 @@
+ROLE: Senior full-stack + web3 engineer. Build "Agent Bazaar" for a hackathon. Terse: no explanations, no file dumps in chat, 3-line status per phase (done/failed/next). Don't re-read files you wrote. Commit per phase. NO demo/mock mode anywhere: every run is real (Base Sepolia, real x402 payments, real Claude calls).
+
+PRODUCT: Autonomous agent economy. User types one goal; an orchestrator decomposes it, runs a reverse AUCTION among specialist agents (price/speed/reputation), pays winners per call via x402 (USDC), escrows big jobs until a verifier approves, and updates on-chain reputation. Every step streams live to the UI.
+
+STACK
+- /web: Next.js 15 (App Router, TS), Tailwind, shadcn/ui, Motion, React Flow, wagmi/viem, Zustand
+- /api: Python 3.12 FastAPI, anthropic SDK (tool use + prompt caching), x402 python pkg, web3.py, pydantic v2, tenacity
+- /contracts: Foundry. AgentRegistry (identity, price, endpoint, reputation), Escrow (release on verifier sig, refund on timeout), OpenZeppelin base
+- Data: Neon Postgres (runs, events, payments) + Upstash Redis (rate limits, idempotency keys, pub/sub)
+- Deploy: TWO Vercel projects, one monorepo (web root=/web, api root=/api, api/index.py exports FastAPI app, vercel.json sets maxDuration + streaming). SSE for live events. Stateless functions only.
+
+PHASE 0: TOOLING (report failures only)
+1. Back up ~/.codex/config.toml; add MCPs (keep existing): context7 (npx -y @upstash/context7-mcp), playwright (npx -y @playwright/mcp@latest), shadcn (npx shadcn@latest mcp), github (https://api.githubcopilot.com/mcp/, bearer_token_env_var GITHUB_PAT).
+2. npx playwright install chromium; foundryup.
+3. Verify every package name vs official README. Use context7 for x402, viem, wagmi, FastAPI-on-Vercel, Neon, Upstash docs. Never guess APIs.
+4. Write AGENTS.md: stack, folder map, commands, design rules, "run forge test + pytest + next build + playwright smoke before finishing any phase".
+
+PHASE 1: CONTRACTS
+Registry + Escrow + reputation (weighted by payment value, decays over time). Forge unit + fuzz + invariant tests. Slither. Deploy script + verify on BaseScan. Export ABIs/addresses to /shared.
+
+PHASE 2: API (agents)
+- 6 specialists behind x402 middleware (402 until paid): web-research, on-chain-analyst, summarizer, code-writer, image-gen, verifier. Each exposes price + capability manifest.
+- Orchestrator: Claude tool-use loop. Plan -> DAG of subtasks -> parallel execution where independent -> auction -> pay -> verify -> synthesize. Use prompt caching + small model for routing, bigger model for synthesis (token savings).
+- Auction: agents return bids (price, ETA, confidence); score = reputation, price, speed; best wins; losers logged.
+- Reliability (critical, no demo fallback): preflight /health (RPC, facilitator, wallet balance, Claude); tenacity retries with backoff; idempotency keys on payments; circuit breaker per agent with automatic failover to next-best bidder; timeouts per subtask; partial results returned instead of total failure.
+- Guardrails: per-session + per-agent spend caps, whitelist, max-price check, prompt-injection filter on agent outputs, rate limits.
+- Events (plan, bid, win, pay, result, verify, settle) persisted + streamed over SSE.
+- pytest incl. mocked facilitator for the 402 flow, auction logic, failover.
+
+PHASE 3: UI/UX (shadcn MCP to build; Playwright MCP to screenshot and self-fix at 1440px + 390px; iterate until no visual bugs)
+- Cmd+K command bar with goal suggestions + voice input (Web Speech API).
+- Swarm canvas (React Flow): orchestrator center, agents orbit in; during auction nodes pulse with bid badges; winner locks in with a glow; payment pulses travel edges with USDC amount; failed agent flickers red then failover edge animates to the next bidder.
+- Live cost ticker (odometer-style), budget ring showing session cap used, timeline scrubber for the run.
+- Node drawer: reputation chart, price history, bids, trace, tx link.
+- Run history page (real past runs, searchable) + shareable run URL with BaseScan receipts.
+- Agent leaderboard + "List your agent" 2-step wizard (endpoint -> price -> on-chain register).
+- Wallet connect, one-click USDC testnet funding helper, session-key budget setup.
+- Design: dark glassmorphism, one accent, Geist, spring physics, subtle noise/gradient mesh, haptic-feeling micro-interactions, skeletons, empty/error states, toasts, full keyboard nav, prefers-reduced-motion, WCAG AA contrast, Lighthouse >90.
+
+PHASE 4: OBSERVABILITY + SECURITY
+Structured logs, per-run trace IDs, /status page (RPC, facilitator, agents up/down), error boundaries, CSP + CORS lockdown, env validation at boot (fail fast with clear message).
+
+PHASE 5: README.md (accurate: claim only what exists and is verified)
+Pitch, screenshots/GIF (Playwright), problem/solution, Mermaid architecture, x402 + auction sequence diagrams, feature table, stack table with why-each, quickstart (<5 commands), env var table, MCP setup, Vercel deploy steps, REAL test output, project structure, security model, honest limitations, roadmap, badges. Skimmable.
+
+PHASE 6: POLISH
+Lint/type clean, seed 8 REAL registered agents on testnet, .env.example, MIT license, e2e Playwright test running a full goal against live deployment, final manual-steps checklist (keys, Vercel env vars, faucet funds, pre-fund wallets).
+
+START Phase 0. After each phase stop and show only: done / failed / next.

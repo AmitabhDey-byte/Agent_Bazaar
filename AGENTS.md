@@ -2,7 +2,7 @@
 
 ## Working agreement
 
-- Follow the user's phased brief. Finish only the authorized phase, commit its work, then stop with three lines: `done /`, `failed /`, `next /`.
+- Follow the user's phased brief. The user has authorized completing all phases continuously. Commit each phase and report terse `done /`, `failed /`, `next /` status without stopping between phases.
 - Keep chat terse. No source dumps. Do not re-read files you just wrote; retain their content in context and use focused validation commands.
 - No demo mode, fake agents, invented transactions, simulated balances, or runtime mock fallback. Product runs use Base Sepolia, real x402 USDC payments, and real Claude calls.
 - Test doubles are allowed only inside isolated tests, including the explicitly requested mocked facilitator tests. Never expose them through runtime configuration.

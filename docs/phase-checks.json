@@ -1,10 +1,11 @@
 {
-  "checked_at": "2026-11-15T07:01:13.282410+00:00",
+  "checked_at": "2026-11-15T07:13:49.802422+00:00",
   "checks": [
     {
       "check": "forge test",
-      "status": "blocked",
-      "reason": "Implementation missing: contracts\\foundry.toml"
+      "status": "passed",
+      "exit_code": 0,
+      "output": "Compiling 45 files with Solc 0.8.28\nSolc 0.8.28 finished in 2.75s\nCompiler run successful with warnings:\nWarning (2018): Function state mutability can be restricted to view\n  --> test/Bazaar.t.sol:30:5:\n   |\n30 |     function signature(bytes32 id, bytes32 result, uint64 deadline) internal returns (bytes memory) {\n   |     ^ (Relevant source part starts here and spans across multiple lines).\n\n\nRan 7 tests for test/Bazaar.t.sol:BazaarTest\n[PASS] testCannotRefundEarlyOrByStranger() (gas: 371493)\n[PASS] testFuzzConservation(uint128,bool) (runs: 256, \u00ce\u00bc: 378805, ~: 426677)\n[PASS] testFuzzScoreBounded(uint128,bool) (runs: 256, \u00ce\u00bc: 101539, ~: 101466)\n[PASS] testPaymentWeightDecayAndDuplicateReceipt() (gas: 239016)\n[PASS] testRegistrationAndReporterAccess() (gas: 91477)\n[PASS] testReleaseAndReplayProtection() (gas: 452872)\n[PASS] testWrongSignatureAndExpiry() (gas: 316025)\nSuite result: ok. 7 passed; 0 failed; 0 skipped; finished in 33.18ms (53.86ms CPU time)\n\nRan 1 test for test/Bazaar.t.sol:EscrowInvariant\n[PASS] invariantCollateralCoversEveryOutstandingJob() (runs: 128, calls: 4096, reverts: 0)\n\n\u00e2\u2022\u00ad---------------+----------+-------+---------+----------\u00e2\u2022\u00ae\n| Contract      | Selector | Calls | Reverts | Discards |\n+=======================================================+\n| EscrowHandler | deposit  | 2009  | 0       | 0        |\n|---------------+----------+-------+---------+----------|\n| EscrowHandler | refund   | 2087  | 0       | 0        |\n\u00e2\u2022\u00b0---------------+----------+-------+---------+----------\u00e2\u2022\u00af\n\nSuite result: ok. 1 passed; 0 failed; 0 skipped; finished in 626.48ms (623.86ms CPU time)\n\nRan 2 test suites in 629.77ms (659.66ms CPU time): 8 tests passed, 0 failed, 0 skipped (8 total tests)\n"
     },
     {
       "check": "pytest",
@@ -13,8 +14,9 @@
     },
     {
       "check": "next build",
-      "status": "blocked",
-      "reason": "Implementation missing: web\\package.json"
+      "status": "failed",
+      "exit_code": 1,
+      "output": "node:internal/modules/cjs/loader:1386\n  throw err;\n  ^\n\nError: Cannot find module 'D:\\MVP\\web\\node_modules\\next\\dist\\bin\\next'\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)\n    at Function._load (node:internal/modules/cjs/loader:1192:37)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v22.20.0\n"
     },
     {
       "check": "playwright smoke",

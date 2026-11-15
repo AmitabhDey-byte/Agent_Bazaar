@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 root = Path(__file__).resolve().parents[1]
 forge = shutil.which("forge") or str(Path.home() / ".foundry/bin" / ("forge.exe" if os.name == "nt" else "forge"))
-python = root / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+python = root / "api/.venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 checks = [
     ("forge test", [forge, "test", "--root", str(root / "contracts")], root / "contracts/foundry.toml"),
     ("pytest", [str(python), "-m", "pytest", "api/tests", "-q"], root / "api/tests"),

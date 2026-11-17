@@ -1,5 +1,6 @@
 import asyncio
 import json
+from types import SimpleNamespace
 
 import httpx
 from eth_account import Account
@@ -13,22 +14,58 @@ from .payments import AmbiguousPayment
 from .security import allowed_endpoint, digest, filter_output
 
 
+async def run_wave(operations):
+    tasks = [asyncio.create_task(operation) for operation in operations]
+    try:
+        return await asyncio.gather(*tasks)
+    except BaseException:
+        # A failed sibling must not leave paid work running after the response.
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        raise
+
+
 class Orchestrator:
     def __init__(self, config, store, chain, brain, buyer):
         self.config, self.store, self.chain, self.brain, self.buyer = config, store, chain, brain, buyer
 
     async def paid(self, task, body, run_id, agents, force_direct=False):
-        bids = await auction(task, agents, self.store, self.config, run_id)
+        obligation = digest(f"{run_id}:{task.id}:{json.dumps(body, sort_keys=True)}")
+        previous = await self.store.query(
+            "SELECT * FROM payments WHERE run_id=%s AND (obligation=%s OR obligation IS NULL) "
+            "AND status<>'cancelled' ORDER BY created_at LIMIT 1",
+            (run_id, obligation),
+            one=True,
+        )
+        if previous:
+            agent = next((a for a in agents if a.id == previous["agent_id"]), None)
+            if not previous.get("obligation") or not agent or agent.price != previous["amount"]:
+                raise AmbiguousPayment("Existing payment needs reconciliation before another assignment")
+            bids = [SimpleNamespace(agent_id=agent.id, price=agent.price)]
+        else:
+            bids = await auction(task, agents, self.store, self.config, run_id)
         for index, bid in enumerate(bids):
             agent = next(a for a in agents if a.id == bid.agent_id)
+            escrow = (
+                previous["mode"] == "escrow"
+                if previous
+                else bid.price >= int(self.config.escrow_threshold_usdc * 1_000_000) and not force_direct
+            )
             payment_id = digest(f"{run_id}:{task.id}:{agent.id}:{json.dumps(body, sort_keys=True)}")
             await self.store.event(
                 run_id, "win", {"task_id": task.id, "agent_id": agent.id, "price": bid.price, "failover": index > 0}
             )
             try:
-                if bid.price >= int(self.config.escrow_threshold_usdc * 1_000_000) and not force_direct:
+                if escrow:
                     payment = await self.store.reserve(
-                        payment_id, run_id, agent.id, agent.price, int(self.config.max_agent_usdc * 1_000_000)
+                        payment_id,
+                        run_id,
+                        agent.id,
+                        agent.price,
+                        int(self.config.max_agent_usdc * 1_000_000),
+                        obligation=obligation,
+                        mode="escrow",
                     )
                     job_id = payment.get("escrow_id")
                     if not job_id:
@@ -63,12 +100,12 @@ class Orchestrator:
                         )
                         response.raise_for_status()
                     return response.json(), agent, payment_id, job_id
-                result, tx = await self.buyer.call(agent, body, payment_id, run_id)
+                result, tx = await self.buyer.call(agent, body, payment_id, run_id, obligation=obligation)
                 return result, agent, payment_id, None
             except AmbiguousPayment:
                 raise
             except Exception as error:
-                if bid.price >= int(self.config.escrow_threshold_usdc * 1_000_000) and not force_direct:
+                if escrow:
                     # Any funding failure can be a mined transaction with a lost response.
                     raise AmbiguousPayment("Escrow funding/execution needs reconciliation") from error
                 await self.store.redis.set(f"circuit:{agent.id}", "open", ex=60)
@@ -142,6 +179,9 @@ class Orchestrator:
                 )
                 if job_id and not verdict.approved:
                     result["warning"] = "Escrow held; payer can refund after its deadline."
+        except AmbiguousPayment:
+            await self.store.event(run_id, "reconciliation_required", {"task_id": task.id})
+            raise
         except (Exception, asyncio.CancelledError) as error:
             result.update(
                 {
@@ -164,9 +204,15 @@ class Orchestrator:
         await self.store.query("UPDATE runs SET status='running',updated_at=now() WHERE id=%s", (run_id,))
         try:
             async with asyncio.timeout(230):
-                plan = Plan.model_validate(run["plan"]) if run["plan"] else await self.brain.plan(run["goal"])
-                if not run["plan"]:
-                    await self.store.query("UPDATE runs SET plan=%s WHERE id=%s", (Jsonb(plan.model_dump()), run_id))
+                if run["plan"]:
+                    plan = Plan.model_validate(run["plan"])
+                    messages = run["plan"].get("_tool_messages")
+                else:
+                    plan, messages = await self.brain.plan(run["goal"])
+                    await self.store.query(
+                        "UPDATE runs SET plan=%s WHERE id=%s",
+                        (Jsonb({**plan.model_dump(), "_tool_messages": messages}), run_id),
+                    )
                     await self.store.event(run_id, "plan", plan.model_dump())
                 agents = await self.chain.agents()
                 results = dict(run["results"])
@@ -175,27 +221,28 @@ class Orchestrator:
                     ready = [t for t in remaining.values() if set(t.dependencies) <= results.keys()]
                     if not ready:
                         raise ValueError("No executable DAG tasks")
-                    outcomes = await asyncio.gather(*(self.task(t, run_id, results, agents) for t in ready))
+                    outcomes = await run_wave(self.task(t, run_id, results, agents) for t in ready)
                     for key, result in outcomes:
                         results[key] = result
                         remaining.pop(key)
-                answer = await self.brain.synthesize(run["goal"], results)
+                answer = await self.brain.synthesize(run["goal"], results, messages=messages)
                 status = (
                     "partial" if any(r.get("error") or not r.get("verified") for r in results.values()) else "completed"
                 )
-                await self.store.query(
-                    "UPDATE runs SET status=%s,answer=%s,updated_at=now() WHERE id=%s", (status, answer, run_id)
+                await self.store.event(
+                    run_id, "complete", {"status": status, "answer": answer}, status=status, answer=answer
                 )
-                await self.store.event(run_id, "complete", {"status": status, "answer": answer})
-        except (TimeoutError, asyncio.CancelledError):
-            await self.store.query("UPDATE runs SET status='paused',updated_at=now() WHERE id=%s", (run_id,))
+        except (TimeoutError, asyncio.CancelledError, AmbiguousPayment):
             await self.store.event(
-                run_id, "paused", {"message": "Execution paused at a durable checkpoint. Resume to continue."}
+                run_id,
+                "paused",
+                {"message": "Execution paused at a durable checkpoint. Resume to continue."},
+                status="paused",
             )
         except Exception as error:
-            await self.store.query("UPDATE runs SET status='partial',updated_at=now() WHERE id=%s", (run_id,))
             await self.store.event(
                 run_id,
                 "error",
                 {"message": "Run interrupted; partial results retained.", "reason": type(error).__name__},
+                status="partial",
             )

@@ -131,10 +131,15 @@ class Buyer:
         signer = EthAccountSigner(Account.from_key(config.orchestrator_private_key.get_secret_value()))
         self.client.register("eip155:84532", ExactEvmScheme(signer=signer))
 
-    async def call(self, agent, body, payment_id, run_id):
+    async def call(self, agent, body, payment_id, run_id, *, obligation):
         await allowed_endpoint(agent.endpoint, self.config.agent_allowed_hosts)
         payment = await self.store.reserve(
-            payment_id, run_id, agent.id, agent.price, int(self.config.max_agent_usdc * 1_000_000)
+            payment_id,
+            run_id,
+            agent.id,
+            agent.price,
+            int(self.config.max_agent_usdc * 1_000_000),
+            obligation=obligation,
         )
         if payment["status"] == "cancelled":
             raise ValueError("This payment attempt was cancelled; use another bidder")

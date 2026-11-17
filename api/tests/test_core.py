@@ -82,7 +82,9 @@ async def test_failover_to_next_bidder(monkeypatch):
     agents = [agent(1), agent(2)]
     bids = [Bid(agent_id=i, price=1000, eta_seconds=10, confidence=0.8) for i in [1, 2]]
     monkeypatch.setattr("bazaar.orchestrator.auction", AsyncMock(return_value=bids))
-    store = SimpleNamespace(event=AsyncMock(), redis=SimpleNamespace(set=AsyncMock()))
+    store = SimpleNamespace(
+        event=AsyncMock(), query=AsyncMock(return_value=None), redis=SimpleNamespace(set=AsyncMock())
+    )
     buyer = SimpleNamespace(
         call=AsyncMock(side_effect=[ValueError("unpaid failure"), ({"output": "done"}, "0xreceipt")])
     )
@@ -102,7 +104,9 @@ async def test_ambiguous_payment_never_fails_over(monkeypatch):
         "bazaar.orchestrator.auction",
         AsyncMock(return_value=[Bid(agent_id=i, price=1000, eta_seconds=10, confidence=0.8) for i in [1, 2]]),
     )
-    store = SimpleNamespace(event=AsyncMock(), redis=SimpleNamespace(set=AsyncMock()))
+    store = SimpleNamespace(
+        event=AsyncMock(), query=AsyncMock(return_value=None), redis=SimpleNamespace(set=AsyncMock())
+    )
     buyer = SimpleNamespace(call=AsyncMock(side_effect=AmbiguousPayment("unknown settlement")))
     o = Orchestrator(SimpleNamespace(escrow_threshold_usdc=Decimal(1)), store, None, None, buyer)
     with pytest.raises(AmbiguousPayment):

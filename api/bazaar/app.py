@@ -20,6 +20,7 @@ from x402.http import FacilitatorConfig, HTTPFacilitatorClient
 
 from .chain import Chain
 from .config import Settings
+from .events import event_cursor, replay_events
 from .models import AgentInput, GoalInput, SessionInput
 from .orchestrator import Orchestrator
 from .payments import Buyer, PaymentGate
@@ -298,11 +299,10 @@ def create_app(config=None):
         registered = await asyncio.to_thread(chain.registry.functions.getAgent(job[2]).call)
         expected_endpoint = f"{config.api_public_url}/agents/{slug}/run"
         if (
-            job[5] != 1
+            job[5] not in (1, 2)
             or job[1].lower() != config.agent_pay_to.lower()
             or job[3] < SERVICES[slug]["price"]
             or registered[5] != expected_endpoint
-            or job[4] <= int(datetime.now(UTC).timestamp())
         ):
             raise HTTPException(403, "Escrow is not funded for this agent")
         binding = digest(json.dumps(body.model_dump(), sort_keys=True))
@@ -315,6 +315,8 @@ def create_app(config=None):
             if cached["binding"] != binding or not cached["result"]:
                 raise HTTPException(409, "Escrow call in progress or input changed")
             return cached["result"]
+        if job[5] != 1 or job[4] <= int(datetime.now(UTC).timestamp()):
+            raise HTTPException(403, "Escrow no longer permits new work")
         row = await store.query(
             "INSERT INTO agent_calls(id,binding,status) VALUES(%s,%s,'executing') ON CONFLICT DO NOTHING RETURNING id",
             (key, binding),
@@ -374,15 +376,32 @@ def create_app(config=None):
         )
         return run
 
+    @app.get("/runs/{run_id}/events")
+    async def run_events(run_id: str, request: Request, last_event_id: str = Header(default="0")):
+        await owned_run(request, run_id)
+        try:
+            cursor = event_cursor(last_event_id)
+        except ValueError:
+            raise HTTPException(400, "Invalid Last-Event-ID")
+        return StreamingResponse(
+            replay_events(store, run_id, cursor, request),
+            media_type="text/event-stream",
+            headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache, no-transform"},
+        )
+
     @app.post("/runs/{run_id}/execute")
     async def execute(run_id: str, request: Request, last_event_id: str = Header(default="0")):
         run = await owned_run(request, run_id)
-        if run["status"] in ("completed", "partial"):
-            raise HTTPException(409, "Run is already finished")
         try:
-            cursor = max(0, int(last_event_id))
+            cursor = event_cursor(last_event_id)
         except ValueError:
             raise HTTPException(400, "Invalid Last-Event-ID")
+        if run["status"] in ("completed", "partial"):
+            return StreamingResponse(
+                replay_events(store, run_id, cursor, request),
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache, no-transform"},
+            )
         if not await store.query(
             "SELECT id FROM sessions WHERE id=%s AND expires_at>now()", (run["session_id"],), one=True
         ):

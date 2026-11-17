@@ -26,10 +26,20 @@ class Store:
             if cursor.description:
                 return await cursor.fetchone() if one else await cursor.fetchall()
 
-    async def event(self, run_id, kind, data):
-        row = await self.query(
-            "INSERT INTO events(run_id,type,data) VALUES(%s,%s,%s) RETURNING *", (run_id, kind, Jsonb(data)), one=True
-        )
+    async def event(self, run_id, kind, data, *, status=None, answer=None):
+        async with self.connection() as connection:
+            # Serialize allocation and commit per run. Otherwise a later sequence
+            # ID can commit first and a resumable cursor can skip an earlier event.
+            await connection.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (str(run_id),))
+            if status:
+                await connection.execute(
+                    "UPDATE runs SET status=%s,answer=COALESCE(%s,answer),updated_at=now() WHERE id=%s",
+                    (status, answer, run_id),
+                )
+            cursor = await connection.execute(
+                "INSERT INTO events(run_id,type,data) VALUES(%s,%s,%s) RETURNING *", (run_id, kind, Jsonb(data))
+            )
+            row = await cursor.fetchone()
         logging.getLogger("bazaar").info(json.dumps({"run_id": str(run_id), "event": kind, "event_id": row["id"]}))
         # Postgres is authoritative. Notification outage cannot undo a persisted event.
         try:
@@ -38,7 +48,9 @@ class Store:
             pass
         return row
 
-    async def reserve(self, payment_id, run_id, agent_id, amount, agent_cap):
+    async def reserve(self, payment_id, run_id, agent_id, amount, agent_cap, *, obligation, mode="x402"):
+        if mode not in ("x402", "escrow") or amount <= 0:
+            raise ValueError("Invalid payment mode or amount")
         async with self.connection() as c:
             # Lock session first: serializes concurrent DAG budget reservations.
             cursor = await c.execute(
@@ -50,7 +62,20 @@ class Store:
             cursor = await c.execute("SELECT * FROM payments WHERE id=%s", (payment_id,))
             existing = await cursor.fetchone()
             if existing:
+                if (
+                    str(existing["run_id"]) != str(run_id)
+                    or existing["agent_id"] != agent_id
+                    or existing["amount"] != amount
+                    or existing.get("obligation") != obligation
+                    or existing["mode"] != mode
+                ):
+                    raise ValueError("Payment binding changed")
                 return existing
+            cursor = await c.execute(
+                "SELECT id FROM payments WHERE obligation=%s AND status<>'cancelled'", (obligation,)
+            )
+            if await cursor.fetchone():
+                raise ValueError("This obligation already has an active payment")
             cursor = await c.execute(
                 "SELECT COALESCE(sum(p.amount),0) AS total FROM payments p JOIN runs r ON r.id=p.run_id WHERE r.session_id=%s AND p.agent_id=%s AND p.status<>'cancelled'",
                 (session["id"], agent_id),
@@ -65,8 +90,8 @@ class Store:
             if not await cursor.fetchone():
                 raise ValueError("Session expired or budget exceeded")
             cursor = await c.execute(
-                "INSERT INTO payments(id,run_id,agent_id,amount) VALUES(%s,%s,%s,%s) RETURNING *",
-                (payment_id, run_id, agent_id, amount),
+                "INSERT INTO payments(id,run_id,agent_id,amount,obligation,mode) VALUES(%s,%s,%s,%s,%s,%s) RETURNING *",
+                (payment_id, run_id, agent_id, amount, obligation, mode),
             )
             return await cursor.fetchone()
 

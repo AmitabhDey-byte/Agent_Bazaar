@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS payments (
  payload jsonb, tx_hash text, escrow_id text, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS payments_run ON payments(run_id);
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS obligation text;
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS mode text NOT NULL DEFAULT 'x402'
+ CHECK(mode IN ('x402','escrow'));
+CREATE UNIQUE INDEX IF NOT EXISTS payments_obligation_active ON payments(obligation)
+ WHERE status <> 'cancelled';
 CREATE TABLE IF NOT EXISTS agent_calls (
  id text PRIMARY KEY, binding text NOT NULL, status text NOT NULL, result jsonb, receipt jsonb,
  updated_at timestamptz NOT NULL DEFAULT now()

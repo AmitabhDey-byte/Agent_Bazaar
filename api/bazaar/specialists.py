@@ -94,12 +94,35 @@ class Intelligence:
         raise ValueError("Claude did not return the required tool result")
 
     async def plan(self, goal):
-        return await self.structured(
-            "Plan a small DAG of at most 5 tasks using only the available capabilities. Avoid redundant tasks. Independent tasks should have no dependencies. A separate verifier is always applied after each specialist, so do not add verifier tasks unless explicitly needed. Goal: "
-            + goal,
-            Plan,
-            "submit_plan",
+        messages = [{"role": "user", "content": goal}]
+        response = await self.client.messages.create(
+            model=self.config.claude_routing_model,
+            max_tokens=2400,
+            system=[
+                {
+                    "type": "text",
+                    "text": SYSTEM + " Plan at most five tasks as a DAG. "
+                    "Independent tasks run concurrently. Each task already receives paid verification. "
+                    "Use execute_plan once; do not request redundant or unauthorized work.",
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
+            tools=[
+                {
+                    "name": "execute_plan",
+                    "description": "Auction, pay and verify a validated task DAG",
+                    "input_schema": Plan.model_json_schema(),
+                }
+            ],
+            tool_choice={"type": "tool", "name": "execute_plan", "disable_parallel_tool_use": True},
+            messages=messages,
         )
+        uses = [block for block in response.content if block.type == "tool_use"]
+        if len(uses) != 1 or uses[0].name != "execute_plan":
+            raise ValueError("Expected exactly one authorized plan tool call")
+        plan = Plan.model_validate(uses[0].input)
+        messages.append({"role": "assistant", "content": [block.model_dump() for block in response.content]})
+        return plan, messages
 
     async def run(self, slug, body):
         service = SERVICES[slug]
@@ -161,7 +184,28 @@ class Intelligence:
             "usage": {"input": result.usage.input_tokens, "output": result.usage.output_tokens},
         }
 
-    async def synthesize(self, goal, results):
+    async def synthesize(self, goal, results, messages=None):
+        # Retain actual Claude tool IDs across function restarts. Older persisted
+        # plans without a conversation can still receive an honest synthesis.
+        if messages:
+            uses = [b for b in messages[-1]["content"] if b["type"] == "tool_use"]
+            if len(uses) != 1 or uses[0]["name"] != "execute_plan":
+                raise ValueError("Stored plan tool call is invalid")
+            messages = [
+                *messages,
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": uses[0]["id"],
+                            "content": json.dumps(results)[:100000],
+                        }
+                    ],
+                },
+            ]
+        else:
+            messages = [{"role": "user", "content": json.dumps({"goal": goal, "results": results})[:100000]}]
         result = await self.client.messages.create(
             model=self.config.claude_synthesis_model,
             max_tokens=3500,
@@ -173,6 +217,9 @@ class Intelligence:
                     "cache_control": {"type": "ephemeral"},
                 }
             ],
-            messages=[{"role": "user", "content": json.dumps({"goal": goal, "results": results})[:100000]}],
+            messages=messages,
         )
-        return filter_output("\n".join(b.text for b in result.content if b.type == "text"))
+        output = filter_output("\n".join(b.text for b in result.content if b.type == "text"))
+        if not output or any(b.type == "tool_use" for b in result.content):
+            raise ValueError("Synthesis must return a final answer without additional tools")
+        return output

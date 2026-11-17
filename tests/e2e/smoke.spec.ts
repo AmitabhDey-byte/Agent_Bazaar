@@ -2,7 +2,7 @@ import {test,expect} from "@playwright/test";
 
 test("mission control is usable without fabricating network data",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"One goal. A world of agents."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"AN ECONOMY OF POSSIBILITIES."})).toBeVisible();
  await expect(page.getByRole("button",{name:"Connect wallet"})).toBeVisible();
  await expect(page.getByLabel("Your goal",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:"Research the Base ecosystem",exact:true}).click();
@@ -10,6 +10,19 @@ test("mission control is usable without fabricating network data",async({page})=
  await page.getByRole("button",{name:"Launch mission",exact:true}).click();
  await expect(page.getByText("Connect your wallet and authorize a session first.")).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+});
+
+test("editorial navigation reaches the mission and works on mobile",async({page},testInfo)=>{
+ await page.goto("/");
+ await page.getByRole("link",{name:"Put them to work"}).click();
+ await expect(page).toHaveURL(/#mission$/);
+ await expect(page.getByRole("heading",{name:"What shall we accomplish?"})).toBeVisible();
+ if(testInfo.project.name==="mobile"){
+  await page.getByRole("button",{name:"Open navigation"}).click();
+ }
+ await page.getByRole("link",{name:"Mission archive"}).click();
+ await expect(page).toHaveURL(/\/history$/);
+ await expect(page.getByText("Your workspace is private")).toBeVisible();
 });
 
 test("command palette and wallet setup support keyboard dismissal",async({page})=>{

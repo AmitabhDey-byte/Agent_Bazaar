@@ -8,5 +8,5 @@ import {Toaster} from "sonner";
 const config=createConfig({chains:[baseSepolia],connectors:[injected()],transports:{[baseSepolia.id]:http()},ssr:true});
 export function Providers({children}:{children:React.ReactNode}){
  const [client]=useState(()=>new QueryClient({defaultOptions:{queries:{retry:1,refetchOnWindowFocus:false}}}));
- return <WagmiProvider config={config}><QueryClientProvider client={client}><MotionConfig reducedMotion="user">{children}<Toaster theme="dark" position="bottom-right" richColors /></MotionConfig></QueryClientProvider></WagmiProvider>;
+ return <WagmiProvider config={config}><QueryClientProvider client={client}><MotionConfig reducedMotion="user">{children}<Toaster theme="light" position="bottom-right" richColors /></MotionConfig></QueryClientProvider></WagmiProvider>;
 }

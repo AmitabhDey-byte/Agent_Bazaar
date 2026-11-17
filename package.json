@@ -12,10 +12,12 @@
     "docs:context7": "node scripts/mcp-client.mjs context7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@modelcontextprotocol/sdk": "1.32.2",
     "@playwright/mcp": "0.0.85",
     "@playwright/test": "1.65.1",
     "@upstash/context7-mcp": "4.7.0",
+    "lighthouse": "13.6.0",
     "shadcn": "4.23.0"
   }
 }

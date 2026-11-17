@@ -1,2 +1,2 @@
-import {Dashboard} from "@/components/dashboard";
-export default function Page(){return <Dashboard/>}
+import {FrontPage} from "@/components/front-page";
+export default function Page(){return <FrontPage/>}

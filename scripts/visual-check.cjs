@@ -3,7 +3,7 @@ async (page) => {
   for (const viewport of [{width:1440,height:1080},{width:390,height:844}]) {
     await page.setViewportSize(viewport);
     await page.goto('http://localhost:3000/', {waitUntil:'networkidle'});
-    await page.getByRole('heading',{name:'One goal. A world of agents.'}).waitFor();
+    await page.getByRole('heading',{name:'AN ECONOMY OF POSSIBILITIES.'}).waitFor();
     await page.getByRole('button',{name:'Open command palette'}).click();
     await page.getByRole('dialog').waitFor();
     await page.keyboard.press('Escape');

@@ -1,4 +1,13 @@
 /* The story uses a single native-scroll timeline. No wheel interception. */
+.front-page-loader{display:none}
+.front-page .workspace-loading{height:900svh}
+.front-page .workspace-skeletons{display:none}
+.front-page .front-page-loader{display:grid;min-height:100svh;place-content:center;gap:24px;text-align:center;padding:100px 20px 40px}
+.front-page-loader>span{font:9px/1.5 var(--font-geist-mono),monospace;letter-spacing:1px;color:#655844}
+.front-page-loader>p{font:clamp(48px,6vw,86px)/1.05 var(--font-editorial),Georgia,serif;letter-spacing:-2px}
+.front-page-loader em{color:#a62d23}
+@media(max-width:760px){.front-page .workspace-loading{height:780svh}}
+@media(prefers-reduced-motion:reduce),(max-height:560px){.front-page .workspace-loading{height:auto;min-height:100svh}}
 .front-page .content{margin:0;max-width:none;min-height:0}
 .front-page .site-header{position:fixed;background:#f1eee5f2;top:0;left:0;right:0;z-index:45;height:82px;border-bottom:0;padding:0 36px}
 .front-page .site-header .header-note{display:none}.front-page .site-header .brand{font-size:25px}.front-page .site-header .brand-emblem{font-size:30px}
@@ -44,6 +53,36 @@
  .journey-receipt{left:50%;top:25%;width:240px;margin:-100px 0 0 -120px;padding:22px}.journey-receipt>p{font-size:6px}.journey-receipt h2{font-size:27px;margin:15px 0}.receipt-rule{margin-bottom:10px}.receipt-item{font-size:9px;line-height:2.3}.receipt-item svg{width:11px}.receipt-seal{width:48px;height:48px;font-size:6px;margin:10px 0}.receipt-bottom{font-size:5px;padding-top:9px}
  .front-page .journey-destination{margin:40px 18px 0;padding:20px 0}.front-page .site-footer{margin:45px 18px 0}.journey-stage[data-chapter="0"]:after{content:"SCROLL TO SET THINGS IN MOTION ↓";position:absolute;bottom:75px;left:20px;right:20px;text-align:center;font:7px var(--font-geist-mono),monospace;letter-spacing:1px}
 }
-@media(prefers-reduced-motion:reduce){.scroll-journey{height:auto}.journey-stage{display:none}.reduced-story{display:block;padding:140px 8% 40px;max-width:1100px;margin:auto}.reduced-story>h1{font-size:clamp(38px,7vw,80px)}.reduced-story img{width:min(100%,600px);height:auto;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.35)}.reduced-story article{padding:25px 0;border-top:1px solid var(--border)}.reduced-story article>span{font-size:9px;letter-spacing:1px}.reduced-story h2{font:36px/1.1 var(--font-editorial),Georgia,serif;margin:12px 0;white-space:pre-line}.reduced-story p{font:15px/1.8 Georgia,serif;max-width:65ch}.reduced-story>a{display:inline-block;margin-top:20px;color:#a62d23}.journey-caption{animation:none}}
+@media(prefers-reduced-motion:reduce),(max-height:560px){.scroll-journey{height:auto}.journey-stage{display:none}.reduced-story{display:block;padding:140px 8% 40px;max-width:1100px;margin:auto}.reduced-story>h1{font-size:clamp(38px,7vw,80px)}.reduced-story img{width:min(100%,600px);height:auto;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.35)}.reduced-story article{padding:25px 0;border-top:1px solid var(--border)}.reduced-story article>span{font-size:9px;letter-spacing:1px}.reduced-story h2{font:36px/1.1 var(--font-editorial),Georgia,serif;margin:12px 0;white-space:pre-line}.reduced-story p{font:15px/1.8 Georgia,serif;max-width:65ch}.reduced-story>a{display:inline-block;margin-top:20px;color:#a62d23}.journey-caption{animation:none}}
 
 @media(min-width:1101px){.passport-stage,.assembly-orbits,.exchange-scene{left:50%}}
+
+/* The supplied engraved objects remain legible as the dossiers assemble and zoom. */
+.passport-portrait{height:116px;background:radial-gradient(ellipse,#d8c8ac60,transparent 72%)}
+.passport-portrait img{position:relative;z-index:1;width:126px;height:116px;object-fit:contain;filter:drop-shadow(2px 4px 2px #49351e18)}
+.passport-orbit{z-index:0;border-style:dotted;opacity:.5}
+.front-page .journey-destination{scroll-margin-top:95px}
+@media(max-width:760px){.front-page .journey-destination{scroll-margin-top:80px}}
+@media(max-width:420px){.passport-stage{transform:scale(.42)}}
+@media(max-width:360px){
+ .passport-stage{transform:scale(.35)}
+ .app-shell .site-header{padding-inline:14px;gap:8px}
+ .app-shell .site-header .brand{font-size:20px}
+ .app-shell .site-header .brand-emblem{display:none}
+}
+@media(max-width:760px) and (min-height:561px) and (max-height:740px){
+ .passport-stage{top:36%;transform:scale(.34)}
+ .journey-caption{bottom:70px;padding:15px 20px}
+ .journey-caption h2{font-size:23px;margin-block:7px}
+ .journey-caption p{font-size:11px;line-height:1.5}
+ .journey-receipt{top:25%;padding:18px;width:220px;margin-left:-110px}
+ .receipt-seal{display:none}
+}
+@media(max-height:560px){
+ .front-page .site-header{height:60px}
+ .front-page .journey-destination{scroll-margin-top:40px;padding-top:14px}
+ .journey-destination>.chapter-label{padding-top:10px;margin-bottom:16px}
+ .journey-destination .heading-row{margin-bottom:18px}
+ .journey-destination .mission-title{font-size:clamp(28px,4vw,42px);margin-block:10px}
+ .journey-destination .outline-pill{display:none}
+}

@@ -26,4 +26,4 @@ Implementation: `web/src/components/scroll-journey.tsx` and `web/src/app/journey
 
 Evidence: `docs/screenshots/motion-*.png`, `docs/motion-accessibility.json`, and the actual browser recording `docs/video/agent-bazaar-scroll.webm`. The dedicated browser tests check scene pinning, opacity isolation, forward and reverse travel, chapter jumps, skip-to-workspace, and reduced motion on desktop and mobile.
 
-Earlier `editorial-*` screenshots and Lighthouse results document the superseded static design. They are not measurements of this revision. Frontend deployment settings remain in `DEPLOY-FRONTEND.md`.
+Earlier `editorial-*` screenshots document the superseded static design. The current artwork integration, mobile corrections, production measurements, and verification results are recorded in [frontend-review.md](frontend-review.md). `docs/lighthouse.json` now measures the current scroll experience. Frontend deployment settings remain in `DEPLOY-FRONTEND.md`.

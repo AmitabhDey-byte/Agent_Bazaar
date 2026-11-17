@@ -20,6 +20,8 @@ Open http://localhost:3000. Skip `npm ci` if dependencies are already installed.
 4. Use Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Leave Output Directory at its Next.js default (`.next`).
 5. Deploy. Vercel provides the frontend URL when the build completes.
 
+For this frontend-only release, select **`web`**, even though the repository also contains a root `vercel.json`. That file describes the combined web/API services deployment; it is not needed for the standalone frontend project. The backend can stay unconfigured while you share the frontend link.
+
 These settings follow Vercel's [Next.js documentation](https://vercel.com/docs/frameworks/full-stack/nextjs) and [monorepo project setup](https://vercel.com/docs/monorepos). This is a Next.js application, not a static `out/` export.
 
 Alternatively, from the frontend directory:

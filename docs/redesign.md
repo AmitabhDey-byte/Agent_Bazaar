@@ -28,4 +28,4 @@ See `DEPLOY-FRONTEND.md` for local preview and frontend-only Vercel deployment.
 - Lighthouse mobile: performance 87, accessibility 100, best practices 100, SEO 100. The measured performance target of over 90 is not met; remaining work is primarily initial JavaScript and image delivery. The font-related layout shift was removed.
 - Regression checks: 20 API tests and 8 contract tests pass, including fuzz and invariant coverage.
 
-No deployment or real funded goal was executed. The user is handling deployment. The full Lighthouse and accessibility reports are adjacent to this file.
+No deployment or real funded goal was executed. The user is handling deployment. The numbers above describe the earlier static redesign. The current pinned scroll frontend and updated measurements are recorded in [frontend-review.md](frontend-review.md); `lighthouse.json` has been refreshed for that revision.

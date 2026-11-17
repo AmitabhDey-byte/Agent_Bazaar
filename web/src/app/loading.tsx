@@ -1,2 +1,2 @@
 import {Skeleton} from "@/components/ui/skeleton";
-export default function Loading(){return <div aria-label="Loading workspace" className="space-y-6"><Skeleton className="h-10 w-2/3"/><Skeleton className="h-32 w-full"/><Skeleton className="h-96 w-full"/></div>}
+export default function Loading(){return <div aria-label="Loading page" aria-busy="true" className="workspace-loading"><div className="front-page-loader" role="status"><span>AGENT BAZAAR / THE FIELD GUIDE</span><p>Good work<br/><em>takes shape.</em></p><span>Opening the field guide…</span></div><div className="workspace-skeletons space-y-6"><Skeleton className="h-10 w-2/3"/><Skeleton className="h-32 w-full"/><Skeleton className="h-96 w-full"/></div></div>}

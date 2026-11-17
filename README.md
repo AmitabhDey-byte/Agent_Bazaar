@@ -137,6 +137,7 @@ The aggregate records actual Forge, pytest, Next build, and Playwright results i
 - [Measured Lighthouse report](docs/lighthouse.json) — local frontend only, not a deployed/live-agent benchmark
 - [Package source verification](docs/package-verification.json) and [tooling sources](docs/tooling-sources.md)
 - [Frontend redesign notes](docs/redesign.md)
+- [Current frontend review, assembly artwork, and scroll verification](docs/frontend-review.md)
 
 The live goal test deliberately skips when a real funded deployment and session are absent. Test doubles exist only in isolated API tests.
 

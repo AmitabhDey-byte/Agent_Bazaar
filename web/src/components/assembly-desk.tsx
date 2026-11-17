@@ -4,16 +4,8 @@ import Image from "next/image";
 import { ArrowUpRight, AudioLines, Layers, Radio, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { money } from "@/lib/api";
+import { specialistArtwork } from "@/lib/specialists";
 import type { Agent, RunEvent } from "@/lib/types";
-
-const specialistArtwork: Record<string, string> = {
-  "web-research": "/images/specialists/web-research.webp",
-  "on-chain-analyst": "/images/specialists/on-chain-analyst.webp",
-  summarizer: "/images/specialists/summarizer.webp",
-  "code-writer": "/images/specialists/code-writer.webp",
-  "image-gen": "/images/specialists/image-gen.webp",
-  verifier: "/images/specialists/verifier.webp",
-};
 
 const prettyCapability = (value: string) => value.replaceAll("-", " ");
 

@@ -3,7 +3,8 @@
 import Image from "next/image";
 import {useEffect,useRef,useState} from "react";
 import {motion,useScroll,useTransform,useMotionValueEvent,useReducedMotion,type MotionValue} from "motion/react";
-import {ArrowDown,ArrowUpRight,Check,Globe,Code2,FileText,ScanEye,ImageIcon,ChartNoAxesCombined,ChevronDown} from "lucide-react";
+import {ArrowDown,ArrowUpRight,Check,ChevronDown} from "lucide-react";
+import {specialistArtwork} from "@/lib/specialists";
 
 const chapters=[
  {at:0,label:"The possibility",title:"A little ambition.",copy:"Every great endeavour starts somewhere. Bring the idea. An economy of independent minds will help you take it further."},
@@ -13,12 +14,12 @@ const chapters=[
  {at:.90,label:"The return",title:"An outcome.\nAnd a paper trail.",copy:"The work comes back together. Review the result, follow the reasoning, and trace the payments. Your ambition, accounted for."},
 ];
 const disciplines=[
- {name:"The researcher",skill:"Finds the facts",icon:Globe,x:-290,y:-120,angle:-12},
- {name:"The analyst",skill:"Reads the chain",icon:ChartNoAxesCombined,x:0,y:-205,angle:6},
- {name:"The writer",skill:"Finds the words",icon:FileText,x:290,y:-120,angle:12},
- {name:"The builder",skill:"Makes it work",icon:Code2,x:-290,y:125,angle:-6},
- {name:"The artist",skill:"Sees it differently",icon:ImageIcon,x:0,y:210,angle:8},
- {name:"The verifier",skill:"Checks the outcome",icon:ScanEye,x:290,y:125,angle:-9},
+ {name:"The researcher",skill:"Finds the facts",capability:"web-research",x:-290,y:-120,angle:-12},
+ {name:"The analyst",skill:"Reads the chain",capability:"on-chain-analyst",x:0,y:-205,angle:6},
+ {name:"The writer",skill:"Finds the words",capability:"summarizer",x:290,y:-120,angle:12},
+ {name:"The builder",skill:"Makes it work",capability:"code-writer",x:-290,y:125,angle:-6},
+ {name:"The artist",skill:"Sees it differently",capability:"image-gen",x:0,y:210,angle:8},
+ {name:"The verifier",skill:"Checks the outcome",capability:"verifier",x:290,y:125,angle:-9},
 ];
 
 // Function transforms keep every layer on the same timeline and avoid browser
@@ -40,8 +41,7 @@ function Passport({item,index,progress}:{item:typeof disciplines[number];index:n
  const opacity=useTrack(progress,[.15,.21,.50,.57,.64],[0,1,1,1,0]);
  const scale=useTrack(progress,[.16,.3,.48,.57,.64],[.5,1,1,index===0?1.4:.8,index===0?1.65:.8]);
  const stampOpacity=useTrack(progress,[.50,.55],[0,1]);
- const Icon=item.icon;
- return <motion.div className={`agent-passport passport-${index}`} style={{x,y,rotate,opacity,scale}} aria-hidden="true"><div className="passport-pin"/><span className="passport-topline">BAZAAR / SPECIALIST {String(index+1).padStart(2,"0")}</span><div className="passport-portrait"><Icon size={66} strokeWidth={.7}/><div className="passport-orbit"/></div><h3>{item.name}</h3><p>{item.skill}</p><span className="passport-foot">INDEPENDENT INTELLIGENCE</span>{index===0&&<motion.span className="selection-stamp" style={{opacity:stampOpacity,rotate:-14}}>THE RIGHT FIT</motion.span>}</motion.div>;
+ return <motion.div className={`agent-passport passport-${index}`} style={{x,y,rotate,opacity,scale}} aria-hidden="true"><div className="passport-pin"/><span className="passport-topline">BAZAAR / SPECIALIST {String(index+1).padStart(2,"0")}</span><div className="passport-portrait"><Image src={specialistArtwork[item.capability]} alt="" width={256} height={256} sizes="(max-width:760px) 96px,180px"/><div className="passport-orbit"/></div><h3>{item.name}</h3><p>{item.skill}</p><span className="passport-foot">INDEPENDENT INTELLIGENCE</span>{index===0&&<motion.span className="selection-stamp" style={{opacity:stampOpacity,rotate:-14}}>THE RIGHT FIT</motion.span>}</motion.div>;
 }
 
 function OrbitDiagram({progress}:{progress:MotionValue<number>}){

@@ -13,7 +13,7 @@ python = root / "api/.venv" / ("Scripts/python.exe" if os.name == "nt" else "bin
 checks = [
     ("forge test", [forge, "test", "--root", str(root / "contracts")], root / "contracts/foundry.toml"),
     ("pytest", [str(python), "-m", "pytest", "api/tests", "-q"], root / "api/tests"),
-    ("next build", [shutil.which("node") or "node", str(root / "web/node_modules/next/dist/bin/next"), "build", "web"], root / "web/package.json"),
+    ("next build", [shutil.which("node") or "node", str(root / "web/node_modules/next/dist/bin/next"), "build"], root / "web/package.json"),
     ("playwright smoke", [shutil.which("node") or "node", str(root / "node_modules/@playwright/test/cli.js"), "test", "--config=playwright.config.ts"], root / "playwright.config.ts"),
 ]
 results = []
@@ -22,7 +22,7 @@ for label, command, required in checks:
         result = {"check": label, "status": "blocked", "reason": f"Implementation missing: {required.relative_to(root)}"}
     else:
         try:
-            completed = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=600)
+            completed = subprocess.run(command, cwd=root / "web" if label == "next build" else root, capture_output=True, text=True, timeout=600)
             result = {"check": label, "status": "passed" if completed.returncode == 0 else "failed", "exit_code": completed.returncode, "output": completed.stdout + completed.stderr}
         except (OSError, subprocess.TimeoutExpired) as error:
             result = {"check": label, "status": "failed", "reason": str(error)}

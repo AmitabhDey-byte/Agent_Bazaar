@@ -1,5 +1,6 @@
 from decimal import Decimal
 from functools import lru_cache
+from urllib.parse import urlsplit
 
 from eth_account import Account
 from pydantic import SecretStr, field_validator
@@ -67,6 +68,43 @@ class Settings(BaseSettings):
     @property
     def payer(self):
         return Account.from_key(self.orchestrator_private_key.get_secret_value()).address
+
+    @field_validator(
+        "api_public_url", "upstash_redis_rest_url", "base_sepolia_rpc_url", "facilitator_url", "image_api_url"
+    )
+    @classmethod
+    def secure_url(cls, value):
+        parsed = urlsplit(value)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.fragment:
+            raise ValueError("A credential-free HTTPS URL is required")
+        return value.rstrip("/")
+
+    @field_validator("allowed_origins")
+    @classmethod
+    def origins(cls, value):
+        for origin in value.split(","):
+            parsed = urlsplit(origin.strip())
+            local = parsed.hostname in ("localhost", "127.0.0.1") and parsed.scheme == "http"
+            if (
+                (parsed.scheme != "https" and not local)
+                or not parsed.hostname
+                or parsed.hostname == "*"
+                or parsed.username
+                or parsed.password
+                or parsed.path
+                or parsed.query
+                or parsed.fragment
+            ):
+                raise ValueError("CORS requires exact HTTPS origins (HTTP localhost allowed)")
+        return value
+
+    @field_validator("agent_allowed_hosts")
+    @classmethod
+    def hosts(cls, value):
+        hosts = [host.strip().lower() for host in value.split(",")]
+        if not hosts or any(not host or any(c in host for c in "/:@* ") for host in hosts):
+            raise ValueError("Agent allowlist requires exact hostnames")
+        return ",".join(hosts)
 
 
 @lru_cache

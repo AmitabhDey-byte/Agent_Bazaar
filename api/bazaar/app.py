@@ -52,6 +52,9 @@ def create_app(config=None):
     app = FastAPI(title="Agent Bazaar", version="0.1.0", lifespan=lifespan)
     app.state.config, app.state.store, app.state.chain, app.state.brain = config, store, chain, brain
     app.add_middleware(PaymentGate)
+    from .hardening import SecurityMiddleware
+
+    app.add_middleware(SecurityMiddleware, store=store)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[x.strip() for x in config.allowed_origins.split(",")],
@@ -72,12 +75,15 @@ def create_app(config=None):
     @app.middleware("http")
     async def observe(request, call_next):
         trace = str(uuid.uuid4())
+        path = request.url.path
+        safe_path = "/public/[token]" if path.startswith("/public/") else path
+        run_id = path.split("/")[2] if path.startswith("/runs/") else None
         try:
-            if int(request.headers.get("content-length", "0")) > 64000:
-                return JSONResponse({"detail": "Request too large"}, 413)
             response = await call_next(request)
         except Exception as error:
-            logger.error(json.dumps({"trace_id": trace, "path": request.url.path, "error": type(error).__name__}))
+            logger.error(
+                json.dumps({"trace_id": trace, "run_id": run_id, "path": safe_path, "error": type(error).__name__})
+            )
             response = JSONResponse({"detail": "Service unavailable", "trace_id": trace}, 503)
         response.headers.update(
             {
@@ -89,7 +95,13 @@ def create_app(config=None):
         )
         logger.info(
             json.dumps(
-                {"trace_id": trace, "method": request.method, "path": request.url.path, "status": response.status_code}
+                {
+                    "trace_id": trace,
+                    "run_id": run_id,
+                    "method": request.method,
+                    "path": safe_path,
+                    "status": response.status_code,
+                }
             )
         )
         return response
@@ -109,7 +121,11 @@ def create_app(config=None):
             uuid.UUID(run_id)
         except ValueError:
             raise HTTPException(404, "Run not found")
-        run = await store.query("SELECT * FROM runs WHERE id=%s AND session_id=%s", (run_id, s["id"]), one=True)
+        run = await store.query(
+            "SELECT r.* FROM runs r JOIN sessions s ON s.id=r.session_id WHERE r.id=%s AND s.wallet=%s",
+            (run_id, s["wallet"]),
+            one=True,
+        )
         if not run:
             raise HTTPException(404, "Run not found")
         return run
@@ -325,8 +341,8 @@ def create_app(config=None):
     async def runs(request: Request, q: str = ""):
         s = await session(request)
         return await store.query(
-            "SELECT id,goal,status,created_at,updated_at FROM runs WHERE session_id=%s AND goal ILIKE %s ORDER BY created_at DESC LIMIT 100",
-            (s["id"], "%" + q[:200] + "%"),
+            "SELECT r.id,r.goal,r.status,r.created_at,r.updated_at FROM runs r JOIN sessions s ON s.id=r.session_id WHERE s.wallet=%s AND r.goal ILIKE %s ORDER BY r.created_at DESC LIMIT 100",
+            (s["wallet"], "%" + q[:200] + "%"),
         )
 
     @app.get("/runs/{run_id}")
@@ -363,26 +379,31 @@ def create_app(config=None):
         run = await owned_run(request, run_id)
         if run["status"] in ("completed", "partial"):
             raise HTTPException(409, "Run is already finished")
-        owner = secrets.token_hex(16)
-        if not await store.redis.set("run-lock:" + run_id, owner, nx=True, ex=280):
-            raise HTTPException(409, "Run is already executing")
         try:
             cursor = max(0, int(last_event_id))
         except ValueError:
             raise HTTPException(400, "Invalid Last-Event-ID")
+        if not await store.query(
+            "SELECT id FROM sessions WHERE id=%s AND expires_at>now()", (run["session_id"],), one=True
+        ):
+            raise HTTPException(409, "This run's spending authorization expired. Start a new run.")
+        owner = secrets.token_hex(16)
+        if not await store.redis.set("run-lock:" + run_id, owner, nx=True, ex=280):
+            raise HTTPException(409, "Run is already executing")
 
         async def stream():
             nonlocal cursor
             task = asyncio.create_task(orchestrator.execute(run))
             try:
                 while True:
+                    finished = task.done()
                     events = await store.query(
                         "SELECT * FROM events WHERE run_id=%s AND id>%s ORDER BY id LIMIT 200", (run_id, cursor)
                     )
                     for event in events:
                         cursor = event["id"]
                         yield f"id: {cursor}\nevent: {event['type']}\ndata: {json.dumps(jsonable_encoder(event))}\n\n"
-                    if task.done() and not events:
+                    if finished and not events:
                         await task
                         break
                     if await request.is_disconnected():

@@ -86,12 +86,17 @@ class Orchestrator:
 
     async def task(self, task, run_id, results, agents):
         context = json.dumps({key: results[key] for key in task.dependencies})[:24000]
+        result = {}
         try:
             async with asyncio.timeout(170):
-                result, agent, payment_id, job_id = await self.paid(
+                paid_result, agent, payment_id, job_id = await self.paid(
                     task, {"instruction": task.instruction, "context": context}, run_id, agents
                 )
-                output = filter_output(result["output"])
+                output = filter_output(paid_result["output"])
+                result = {**paid_result}
+                result["output"] = output
+                result["agent_id"] = agent.id
+                result["escrow_id"] = job_id
                 await self.store.event(
                     run_id, "result", {"task_id": task.id, "agent_id": agent.id, "output": output[:4000]}
                 )
@@ -138,10 +143,13 @@ class Orchestrator:
                 if job_id and not verdict.approved:
                     result["warning"] = "Escrow held; payer can refund after its deadline."
         except (Exception, asyncio.CancelledError) as error:
-            result = {
-                "error": type(error).__name__,
-                "message": "Task incomplete; existing payment reservations are preserved when settlement is uncertain.",
-            }
+            result.update(
+                {
+                    "error": type(error).__name__,
+                    "verified": False,
+                    "message": "Task incomplete; existing payment reservations are preserved when settlement is uncertain.",
+                }
+            )
             if isinstance(error, asyncio.CancelledError):
                 # A cancelled task is retried using its durable payment/transaction identifiers.
                 raise

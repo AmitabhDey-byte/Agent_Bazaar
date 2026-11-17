@@ -3,10 +3,11 @@ from unittest.mock import AsyncMock
 
 import httpx
 import pytest
-from bazaar.payments import PaymentGate, requirements
 from fastapi import FastAPI
 from x402.http.utils import decode_payment_required_header, encode_payment_signature_header
 from x402.schemas import PaymentPayload, SettleResponse, VerifyResponse
+
+from bazaar.payments import PaymentGate, requirements
 
 
 class MemoryStore:

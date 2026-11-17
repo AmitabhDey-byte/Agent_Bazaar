@@ -69,7 +69,7 @@ npm run test:smoke
 
 ## Design rules
 
-- The user replaced the original dark dashboard direction with the editorial aesthetic of https://belka-stelka.ava-case.site/. Preserve the cream paper, Bodoni serif headlines, vermilion ink, original engraved illustration, newspaper columns, and chapter navigation. Use shadcn primitives for accessible controls; never replace real data with decorative fake metrics.
+- The user replaced the original dark dashboard direction with the editorial aesthetic of https://belka-stelka.ava-case.site/. Preserve the cream paper, Bodoni serif headlines, vermilion ink, original engraved illustration, newspaper columns, and chapter navigation. The landing page must be a continuous pinned scroll narrative with camera zoom, spatial assembly, scene changes and reversible scroll-bound motion; static editorial styling alone does not satisfy the user's reference. Use shadcn primitives for accessible controls; never replace real data with decorative fake metrics.
 - Spring transitions and React Flow payment/auction/failover animations follow persisted events. Respect `prefers-reduced-motion`.
 - Provide keyboard navigation, focus visibility, accessible names, WCAG AA contrast, loading skeletons, honest empty/error states and toasts.
 - Include command palette (Cmd/Ctrl+K), optional Web Speech voice input with unsupported-browser handling, swarm canvas, cost ticker, budget ring, run timeline and agent drawer.

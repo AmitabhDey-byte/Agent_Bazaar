@@ -2,7 +2,7 @@ import {test,expect} from "@playwright/test";
 
 test("mission control is usable without fabricating network data",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"AN ECONOMY OF POSSIBILITIES."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:/ONE SMALL IDEA/})).toBeVisible();
  await expect(page.getByRole("button",{name:"Connect wallet"})).toBeVisible();
  await expect(page.getByLabel("Your goal",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:"Research the Base ecosystem",exact:true}).click();
@@ -17,7 +17,7 @@ test("editorial navigation reaches the mission and works on mobile",async({page}
  await page.getByRole("link",{name:"Put them to work"}).click();
  await expect(page).toHaveURL(/#mission$/);
  await expect(page.getByRole("heading",{name:"What shall we accomplish?"})).toBeVisible();
- if(testInfo.project.name==="mobile"){
+ if(testInfo.project.name){
   await page.getByRole("button",{name:"Open navigation"}).click();
  }
  await page.getByRole("link",{name:"Mission archive"}).click();

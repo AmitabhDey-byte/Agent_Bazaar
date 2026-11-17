@@ -140,7 +140,7 @@ class Chain:
         digest = await asyncio.to_thread(self.escrow.functions.approvalDigest(job_id, result_hash, deadline).call)
         verifier = Account.from_key(self.config.verifier_private_key.get_secret_value())
         # The digest was produced by the deployed EIP-712 contract, including domain separation.
-        sig = Account._sign_hash(digest, verifier.key).signature
+        sig = verifier.unsafe_sign_hash(digest).signature
         receipt = await self.send(
             self.escrow.functions.release(job_id, result_hash, deadline, sig), f"release:{operation}"
         )

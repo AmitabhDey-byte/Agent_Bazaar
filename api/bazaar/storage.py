@@ -1,4 +1,5 @@
 import json
+import logging
 from contextlib import asynccontextmanager
 
 from psycopg import AsyncConnection
@@ -29,6 +30,7 @@ class Store:
         row = await self.query(
             "INSERT INTO events(run_id,type,data) VALUES(%s,%s,%s) RETURNING *", (run_id, kind, Jsonb(data)), one=True
         )
+        logging.getLogger("bazaar").info(json.dumps({"run_id": str(run_id), "event": kind, "event_id": row["id"]}))
         # Postgres is authoritative. Notification outage cannot undo a persisted event.
         try:
             await self.redis.publish(f"run:{run_id}", json.dumps({"id": row["id"]}))

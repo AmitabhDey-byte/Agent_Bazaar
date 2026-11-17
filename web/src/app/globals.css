@@ -101,11 +101,15 @@ h1,.mission-title{font:48px/1.1 var(--font-editorial),Georgia,serif;letter-spaci
 .registry-illustration{position:relative;width:176px;aspect-ratio:3/2;flex:0 0 34%;overflow:hidden;background:#f1eee5}
 .registry-illustration img,.auction-illustration img{display:block;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
 .specialist-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.specialist-card{position:relative;display:grid;grid-template-columns:31px minmax(0,1fr) auto 13px;align-items:center;column-gap:9px;min-width:0;padding:11px 10px 8px;background:#f6f2e9;border:1px solid #d0c6b5;color:#302b24;text-align:left;box-shadow:2px 2px 0 #d8d0c255;transition:border-color .2s,box-shadow .2s,background-color .2s}
+.specialist-card{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr) auto 13px;align-items:center;column-gap:9px;min-width:0;padding:11px 10px 8px;background:#f6f2e9;border:1px solid #d0c6b5;color:#302b24;text-align:left;box-shadow:2px 2px 0 #d8d0c255;transition:border-color .2s,box-shadow .2s,background-color .2s}
 .specialist-card:hover,.specialist-card:focus-visible{border-color:#68819a;box-shadow:2px 3px 0 #365e8620;background:#fbf8f1}
 .specialist-card.is-inactive{background:#eee9df;color:#71695c;box-shadow:none}
-.specialist-symbol{display:grid;place-items:center;width:30px;height:30px;background:#e3e9ed;border:1px solid #cad5de;color:#31587b}
+.specialist-symbol{display:grid;place-items:center;width:46px;height:46px;background:#e3e9ed;border:1px solid #cad5de;color:#31587b}
 .specialist-card.is-inactive .specialist-symbol{background:#ece7de;border-color:#d7cfc1;color:#7d756a}
+.specialist-symbol.has-artwork,.specialist-card.is-inactive .specialist-symbol.has-artwork{background:transparent;border-color:transparent}
+.specialist-symbol.has-artwork img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .22s ease}
+.specialist-card:hover .specialist-symbol.has-artwork img,.specialist-card:focus-visible .specialist-symbol.has-artwork img{transform:translateY(-2px) rotate(-2deg) scale(1.03)}
+.specialist-card.is-inactive .specialist-symbol.has-artwork img{filter:saturate(.48);opacity:.72}
 .specialist-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
 .specialist-name{text-transform:capitalize;font:13px/1.15 Georgia,serif;overflow-wrap:anywhere}
 .specialist-id{display:flex;align-items:center;gap:5px;font:7px/1.3 var(--font-geist-mono),monospace;letter-spacing:.25px;color:#72695b;white-space:nowrap}
@@ -155,6 +159,7 @@ h1,.mission-title{font:48px/1.1 var(--font-editorial),Georgia,serif;letter-spaci
 .auction-note svg{flex:none;margin-top:1px;color:#365e86}
 @keyframes assembly-breathe{0%,100%{box-shadow:0 0 0 3px #365e8618}50%{box-shadow:0 0 0 5px #365e8609}}
 @keyframes assembly-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.specialist-symbol.has-artwork img{transition:none}}
 @media(max-width:1050px){.assembly-workbench{grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr)}.assembly-registry{padding-inline:14px}.specialist-grid{gap:6px}.specialist-card{column-gap:7px;padding-inline:8px}}
 @media(max-width:850px){.assembly-intro{grid-template-columns:1fr;gap:15px}.assembly-intro-aside{max-width:none;justify-self:stretch;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px}.assembly-tally{margin-top:0;min-width:140px}.assembly-workbench{grid-template-columns:1fr}.assembly-registry{border-right:0;border-bottom:1px solid #c8c0b1;padding:18px}.auction-panel{padding:18px}}
 @media(max-width:560px){.assembly-desk{margin:27px 0 30px;padding:24px 0}.assembly-title{font-size:34px;letter-spacing:-1.1px}.assembly-intro-aside{grid-template-columns:1fr;gap:12px}.assembly-intro-aside>p{font-size:12px}.assembly-tally{min-width:0;padding-top:9px}.assembly-tally>strong{font-size:29px}.assembly-registry{padding:14px 11px}.registry-heading{min-height:102px;gap:9px}.registry-heading h3{font-size:23px}.registry-subtitle{max-width:25ch;font-size:10px}.registry-illustration{width:38%;flex-basis:38%}.specialist-grid{grid-template-columns:1fr;gap:7px}.specialist-card{padding:10px}.specialist-name{font-size:13px}.auction-panel{padding:16px 13px}.auction-illustration{width:110px;height:72px;flex-basis:38%}.auction-panel h3{font-size:25px}.auction-empty{min-height:136px}}

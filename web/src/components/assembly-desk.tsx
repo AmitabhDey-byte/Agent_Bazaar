@@ -1,20 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight, AudioLines, Code2, FileText, Globe, ImageIcon, Layers, Radio, ShieldCheck, Sparkles, Workflow } from "lucide-react";
+import { ArrowUpRight, AudioLines, Layers, Radio, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { money } from "@/lib/api";
 import type { Agent, RunEvent } from "@/lib/types";
 
-type SpecialistIcon = typeof Globe;
-
-const specialistIcons: Record<string, SpecialistIcon> = {
-  "web-research": Globe,
-  "on-chain-analyst": Workflow,
-  summarizer: FileText,
-  "code-writer": Code2,
-  "image-gen": ImageIcon,
-  verifier: ShieldCheck,
+const specialistArtwork: Record<string, string> = {
+  "web-research": "/images/specialists/web-research.webp",
+  "on-chain-analyst": "/images/specialists/on-chain-analyst.webp",
+  summarizer: "/images/specialists/summarizer.webp",
+  "code-writer": "/images/specialists/code-writer.webp",
+  "image-gen": "/images/specialists/image-gen.webp",
+  verifier: "/images/specialists/verifier.webp",
 };
 
 const prettyCapability = (value: string) => value.replaceAll("-", " ");
@@ -116,7 +114,7 @@ export function AssemblyDesk({
           ) : orderedAgents.length ? (
             <div className="specialist-grid">
               {orderedAgents.map((agent, index) => {
-                const Icon = specialistIcons[agent.capability] ?? Sparkles;
+                const artwork = specialistArtwork[agent.capability];
                 return (
                   <motion.button
                     key={agent.id}
@@ -130,7 +128,13 @@ export function AssemblyDesk({
                     whileHover={reduceMotion ? undefined : { y: -2 }}
                     whileTap={reduceMotion ? undefined : { scale: 0.99 }}
                   >
-                    <span className="specialist-symbol" aria-hidden="true"><Icon size={17} strokeWidth={1.6} /></span>
+                    <span className={`specialist-symbol ${artwork ? "has-artwork" : ""}`} aria-hidden="true">
+                      {artwork ? (
+                        <Image src={artwork} alt="" width={48} height={48} sizes="48px" />
+                      ) : (
+                        <Sparkles size={17} strokeWidth={1.6} />
+                      )}
+                    </span>
                     <span className="specialist-copy">
                       <span className="specialist-name">{prettyCapability(agent.capability)}</span>
                       <span className="specialist-id">AGENT #{agent.id} <i /> {agent.active ? "AVAILABLE" : "INACTIVE"}</span>

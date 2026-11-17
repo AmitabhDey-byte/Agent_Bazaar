@@ -22,6 +22,8 @@ Open http://localhost:3000. Skip `npm ci` if dependencies are already installed.
 
 For this frontend-only release, select **`web`**, even though the repository also contains a root `vercel.json`. That file describes the combined web/API services deployment; it is not needed for the standalone frontend project. The backend can stay unconfigured while you share the frontend link.
 
+If deploying the repository root with **Vercel Services**, the frontend middleware must use `config.runtime: "nodejs"`. This is supported by the pinned Next.js 15.5 version and is configured in `web/src/middleware.ts`; Services rejects the default Edge middleware output. The nonce-based Content Security Policy remains enabled. See [Next.js 15.5 Node middleware](https://nextjs.org/blog/next-15-5#nodejs-middleware-stable).
+
 These settings follow Vercel's [Next.js documentation](https://vercel.com/docs/frameworks/full-stack/nextjs) and [monorepo project setup](https://vercel.com/docs/monorepos). This is a Next.js application, not a static `out/` export.
 
 Alternatively, from the frontend directory:

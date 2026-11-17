@@ -1,0 +1,1 @@
+{"routes":[{"path":"/","title":"Home"},{"path":"/history","title":"Mission archive"},{"path":"/leaderboard","title":"Specialists"},{"path":"/list","title":"List your agent"},{"path":"/runs/:id","title":"Mission run"},{"path":"/share/:token","title":"Shared mission"},{"path":"/status","title":"Network status"}]}

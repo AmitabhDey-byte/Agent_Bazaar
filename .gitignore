@@ -19,3 +19,4 @@ playwright-report/
 .tools/
 .local/
 .playwright-mcp/
+.work/
